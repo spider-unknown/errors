@@ -1,3 +1,3 @@
-module 94.26.228.73/b.bekmuratov/errors
+module https://github.com/spider-unknown/errors
 
 go 1.16
