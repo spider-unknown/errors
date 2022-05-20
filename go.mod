@@ -1,3 +1,3 @@
-module http://94.26.228.73/b.bekmuratov/errors
+module 94.26.228.73/b.bekmuratov/errors
 
 go 1.16
