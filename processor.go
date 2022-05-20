@@ -1,19 +1,13 @@
-package errors
+package main
 
 import (
+	"log"
 	"net/http"
+	"os"
 	"reflect"
 )
 
 var errorMap = make(map[string]int)
-
-type ErrorInternalServer struct {
-	Message string `json:"message"`
-}
-
-func (e ErrorInternalServer) Error() string {
-	return e.Message
-}
 
 type ErrorBadRequest struct {
 	Message string `json:"message"`
@@ -239,7 +233,24 @@ func (e ErrorUnavailableForLegalReasons) Error() string {
 	return e.Message
 }
 
+type ErrorInternalServer struct {
+	Message string `json:"message"`
+}
+
+func (e ErrorInternalServer) Error() string {
+	return e.Message
+}
+
+type ErrorNotImplemented struct {
+	Message string `json:"message"`
+}
+
+func (e ErrorNotImplemented) Error() string {
+	return e.Message
+}
+
 func Init() {
+
 	errorMap[reflect.TypeOf(ErrorBadRequest{}).String()] = http.StatusBadRequest
 	errorMap[reflect.TypeOf(ErrorUnauthorized{}).String()] = http.StatusUnauthorized
 	errorMap[reflect.TypeOf(ErrorPaymentRequired{}).String()] = http.StatusPaymentRequired
@@ -270,15 +281,23 @@ func Init() {
 	errorMap[reflect.TypeOf(ErrorRequestHeaderFieldsTooLarge{}).String()] = http.StatusRequestHeaderFieldsTooLarge
 	errorMap[reflect.TypeOf(ErrorUnavailableForLegalReasons{}).String()] = http.StatusUnavailableForLegalReasons
 	errorMap[reflect.TypeOf(ErrorInternalServer{}).String()] = http.StatusInternalServerError
+	errorMap[reflect.TypeOf(ErrorInternalServer{}).String()] = http.StatusNotImplemented
 
 }
 
 func DetermineError(error interface{}) (int, interface{}) {
+	file, err := os.OpenFile("custom.log", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	defer file.Close()
+	logger := log.New(file, "", log.LstdFlags)
 	errType := reflect.TypeOf(error).String()
 	status, exists := errorMap[errType]
 	if !exists {
 		status = http.StatusInternalServerError
 	}
-
+	logger.Printf("Error: %v", error)
 	return status, error
 }
