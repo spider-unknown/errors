@@ -279,5 +279,6 @@ func DetermineError(error interface{}) (int, interface{}) {
 	if !exists {
 		status = http.StatusInternalServerError
 	}
+
 	return status, error
 }
