@@ -1,10 +1,12 @@
 package errors
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 	"os"
 	"reflect"
+	"time"
 )
 
 var errorMap = make(map[string]int)
@@ -249,6 +251,78 @@ func (e ErrorNotImplemented) Error() string {
 	return e.Message
 }
 
+type ErrorBadGateway struct {
+	Message string `json:"message"`
+}
+
+func (e ErrorBadGateway) Error() string {
+	return e.Message
+}
+
+type ErrorServiceUnavailable struct {
+	Message string `json:"message"`
+}
+
+func (e ErrorServiceUnavailable) Error() string {
+	return e.Message
+}
+
+type ErrorGatewayTimeout struct {
+	Message string `json:"message"`
+}
+
+func (e ErrorGatewayTimeout) Error() string {
+	return e.Message
+}
+
+type ErrorHTTPVersionNotSupported struct {
+	Message string `json:"message"`
+}
+
+func (e ErrorHTTPVersionNotSupported) Error() string {
+	return e.Message
+}
+
+type ErrorVariantAlsoNegotiates struct {
+	Message string `json:"message"`
+}
+
+func (e ErrorVariantAlsoNegotiates) Error() string {
+	return e.Message
+}
+
+type ErrorInsufficientStorage struct {
+	Message string `json:"message"`
+}
+
+func (e ErrorInsufficientStorage) Error() string {
+	return e.Message
+}
+
+type ErrorLoopDetected struct {
+	Message string `json:"message"`
+}
+
+func (e ErrorLoopDetected) Error() string {
+	return e.Message
+}
+
+type ErrorNotExtended struct {
+	Message string `json:"message"`
+}
+
+func (e ErrorNotExtended) Error() string {
+	return e.Message
+}
+
+type ErrorNetworkAuthenticationRequired struct {
+	Message string `json:"message"`
+}
+
+func (e ErrorNetworkAuthenticationRequired) Error() string {
+	return e.Message
+}
+
 func Init() {
 
 	errorMap[reflect.TypeOf(ErrorBadRequest{}).String()] = http.StatusBadRequest
@@ -281,12 +355,22 @@ func Init() {
 	errorMap[reflect.TypeOf(ErrorRequestHeaderFieldsTooLarge{}).String()] = http.StatusRequestHeaderFieldsTooLarge
 	errorMap[reflect.TypeOf(ErrorUnavailableForLegalReasons{}).String()] = http.StatusUnavailableForLegalReasons
 	errorMap[reflect.TypeOf(ErrorInternalServer{}).String()] = http.StatusInternalServerError
-	errorMap[reflect.TypeOf(ErrorInternalServer{}).String()] = http.StatusNotImplemented
+	errorMap[reflect.TypeOf(ErrorNotImplemented{}).String()] = http.StatusNotImplemented
+	errorMap[reflect.TypeOf(ErrorBadGateway{}).String()] = http.StatusBadGateway
+	errorMap[reflect.TypeOf(ErrorServiceUnavailable{}).String()] = http.StatusServiceUnavailable
+	errorMap[reflect.TypeOf(ErrorGatewayTimeout{}).String()] = http.StatusGatewayTimeout
+	errorMap[reflect.TypeOf(ErrorHTTPVersionNotSupported{}).String()] = http.StatusHTTPVersionNotSupported
+	errorMap[reflect.TypeOf(ErrorVariantAlsoNegotiates{}).String()] = http.StatusVariantAlsoNegotiates
+	errorMap[reflect.TypeOf(ErrorInsufficientStorage{}).String()] = http.StatusInsufficientStorage
+	errorMap[reflect.TypeOf(ErrorLoopDetected{}).String()] = http.StatusLoopDetected
+	errorMap[reflect.TypeOf(ErrorNotExtended{}).String()] = http.StatusNotExtended
+	errorMap[reflect.TypeOf(ErrorNetworkAuthenticationRequired{}).String()] = http.StatusNetworkAuthenticationRequired
 
 }
 
 func DetermineError(error interface{}) (int, interface{}) {
-	file, err := os.OpenFile("custom.log", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	fileName := fmt.Sprintf("%s.log", time.Now().Format("2006-01-02"))
+	file, err := os.OpenFile(fileName, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 	if err != nil {
 		log.Fatal(err)
 	}
